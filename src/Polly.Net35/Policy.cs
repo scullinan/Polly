@@ -73,5 +73,16 @@ namespace Polly
 
             return new PolicyBuilder(predicate);
         }
+
+        /// <summary>
+        /// Specifies the first policy of a nested policy stack. This policy will be evaulated first and any subsequent policies 
+        /// will be evaluated there after in order.
+        /// </summary>
+        /// <param name="first"></param>
+        /// <returns>A <see cref="NestedPolicy"/> instance</returns>
+        public static NestedPolicy First(Policy first)
+        {
+            return new NestedPolicy(first);
+        }
     }
 }
