@@ -75,6 +75,9 @@
     <Compile Include="..\Polly.Net35\ExceptionPredicate.cs">
       <Link>ExceptionPredicate.cs</Link>
     </Compile>
+    <Compile Include="..\Polly.Net35\NestedPolicy.cs">
+      <Link>NestedPolicy.cs</Link>
+    </Compile>
     <Compile Include="..\Polly.Net35\OrSyntax.cs">
       <Link>OrSyntax.cs</Link>
     </Compile>
@@ -111,7 +114,6 @@
     <Compile Include="CircuitBreakerSyntaxAsync.cs" />
     <Compile Include="CircuitBreaker\CircuitBreakerPolicyAsync.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
-    <Compile Include="NestedPolicy.cs" />
     <Compile Include="NestedPolicyAsync.cs" />
     <Compile Include="PolicyAsync.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

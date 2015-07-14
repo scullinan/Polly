@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Polly.Extensions;
 
@@ -14,17 +16,19 @@ namespace Polly
         [DebuggerStepThrough]
         public Task ExecuteAsync(Func<Task> action)
         {
-            if (Policies.Count == 0) throw new InvalidOperationException("There are no Policies to execute");
+            if (!Policies.Any()) throw new InvalidOperationException("There are no Policies to execute");
 
-            return ExecuteAsync(Policies.Pop().ExecuteAsync, action);
+            var stack = new Stack<Policy>(Policies);
+            return ExecuteAsync(stack, stack.Pop().ExecuteAsync, action);
         }
 
-        private Task ExecuteAsync(Func<Func<Task>, Task> execute, Func<Task> action)
+        private Task ExecuteAsync(Stack<Policy> stack, Func<Func<Task>, Task> execute, Func<Task> action)
         {
-            if (Policies.Count == 0)
+            if (!stack.Any())
                 return execute(action);
 
-            return execute(async () => await ExecuteAsync(Policies.Pop().ExecuteAsync, action));
+            var top = stack.Pop();
+            return execute(async () => await ExecuteAsync(stack, top.ExecuteAsync, action));
         }
 
         /// <summary>
@@ -36,19 +40,20 @@ namespace Polly
         [DebuggerStepThrough]
         public async Task<TResult> ExecuteAsync<TResult>(Func<Task<TResult>> action)
         {
-            if (Policies.Count == 0) throw new InvalidOperationException("There are no Policies to execute");
+            if (!Policies.Any()) throw new InvalidOperationException("There are no Policies to execute");
 
-            return await ExecuteAsync(Policies.Pop().ExecuteAsync, action);
+            var stack = new Stack<Policy>(Policies);
+            return await ExecuteAsync(stack,stack.Pop().ExecuteAsync, action);
         }
 
-        private async Task<TResult> ExecuteAsync<TResult>(Func<Func<Task<TResult>>, Task<TResult>> execute, Func<Task<TResult>> action)
+        private async Task<TResult> ExecuteAsync<TResult>(Stack<Policy> stack, Func<Func<Task<TResult>>, Task<TResult>> execute, Func<Task<TResult>> action)
         {
-            if (Policies.Count == 0)
+            if (stack.Count == 0)
                 return await execute(async () => await action().NotOnCapturedContext())
                     .NotOnCapturedContext();
 
-            var top = Policies.Pop();
-            return await execute(async () => await ExecuteAsync(top.ExecuteAsync, action))
+            var top = stack.Pop();
+            return await execute(async () => await ExecuteAsync(stack, top.ExecuteAsync, action))
                 .NotOnCapturedContext();
         }
     }
