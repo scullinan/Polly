@@ -183,6 +183,38 @@ Policy
   .CircuitBreaker(2, TimeSpan.FromMinutes(1));
 ```
 
+### Combining Or Nesting Policies ###
+```csharp
+// Retry once then move to the CircuitBreaker/2nd policy and break the circuit 
+// after the specified number of exceptions (after retries) and keep circuit broken for the specified duration
+Policy
+    .First(
+        Policy
+          .Handle<DivideByZeroException>()
+         .Retry())        
+     .Then(
+        Policy
+         .Handle<DivideByZeroException>()
+         .CircuitBreaker(2, TimeSpan.FromMinutes(1)))
+
+// Retry 3 times, with exponential backoff, for an HttpException with a 503 HttpStatusCode (ServiceUnavaiable). 
+// Use a separate CircuitBreaker policy for TimeoutExceptions as retrying is not a good idea in this scenario. 
+Policy
+    .First(
+        Policy
+         .Handle<HttpException>(ex=>ex.StatsuCode==503)
+         .WaitAndRetry(new[]
+          {
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromSeconds(2),
+            TimeSpan.FromSeconds(4)
+          }))       
+     .Then(
+        Policy
+         .Handle<TimeoutException>()
+         .CircuitBreaker(2, TimeSpan.FromMinutes(1)))
+```
+
 For more information on the Circuit Breaker pattern see:
 * [Making the Netflix API More Resilient](http://techblog.netflix.com/2011/12/making-netflix-api-more-resilient.html)
 * [The Circuit Breaker](http://thatextramile.be/blog/2008/05/the-circuit-breaker)
