@@ -186,7 +186,8 @@ Policy
 ### Combining Or Nesting Policies ###
 ```csharp
 // Retry once then move to the CircuitBreaker/2nd policy and break the circuit 
-// after the specified number of exceptions (after retries) and keep circuit broken for the specified duration
+// after the specified number of exceptions (after retries) and keep circuit broken 
+// for the specified duration 
 Policy
     .First(
         Policy
@@ -197,8 +198,9 @@ Policy
          .Handle<DivideByZeroException>()
          .CircuitBreaker(2, TimeSpan.FromMinutes(1)))
 
-// Retry 3 times, with exponential backoff, for an HttpException with a 503 HttpStatusCode (ServiceUnavaiable). 
-// Use a separate CircuitBreaker policy for TimeoutExceptions as retrying is not a good idea in this scenario. 
+// Retry 3 times, with exponential backoff, for an HttpException with a 503 HttpStatusCode. 
+// Use a separate CircuitBreaker policy for TimeoutExceptions as retrying may not be a 
+// good idea in that scenario. 
 Policy
     .First(
         Policy
