@@ -19,7 +19,8 @@ namespace Polly
             if (!Policies.Any()) throw new InvalidOperationException("There are no Policies to execute");
 
             var stack = new Stack<Policy>(Policies);
-            return ExecuteAsync(stack, stack.Pop().ExecuteAsync, action);
+            var top = stack.Pop();
+            return ExecuteAsync(stack, top.ExecuteAsync, action);
         }
 
         private Task ExecuteAsync(Stack<Policy> stack, Func<Func<Task>, Task> execute, Func<Task> action)
@@ -43,7 +44,8 @@ namespace Polly
             if (!Policies.Any()) throw new InvalidOperationException("There are no Policies to execute");
 
             var stack = new Stack<Policy>(Policies);
-            return await ExecuteAsync(stack,stack.Pop().ExecuteAsync, action);
+            var top = stack.Pop();
+            return await ExecuteAsync(stack, top.ExecuteAsync, action);
         }
 
         private async Task<TResult> ExecuteAsync<TResult>(Stack<Policy> stack, Func<Func<Task<TResult>>, Task<TResult>> execute, Func<Task<TResult>> action)
