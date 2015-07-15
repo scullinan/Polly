@@ -198,7 +198,8 @@ Policy
          .Handle<DivideByZeroException>()
          .CircuitBreaker(2, TimeSpan.FromMinutes(1)))
 
-// First retry 3 times, with exponential backoff, for an HttpException with a 503 HttpStatusCode. 
+// First retry 3 times, with exponential backoff, for an HttpException where the StatusCode
+// is 503 (ServiceUnavailable). 
 // Then use a separate CircuitBreaker policy for TimeoutExceptions as retrying may not be a 
 // good idea in that scenario. 
 Policy
