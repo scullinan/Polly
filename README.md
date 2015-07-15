@@ -191,7 +191,7 @@ Policy
 Policy
     .First(
         Policy
-          .Handle<DivideByZeroException>()
+         .Handle<DivideByZeroException>()
          .Retry())        
      .Then(
         Policy
@@ -204,7 +204,7 @@ Policy
 Policy
     .First(
         Policy
-         .Handle<HttpException>(ex=>ex.StatsuCode==503)
+         .Handle<HttpException>(ex=>ex.StatusCode==503)
          .WaitAndRetry(new[]
           {
             TimeSpan.FromSeconds(1),
