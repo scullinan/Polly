@@ -183,7 +183,7 @@ Policy
   .CircuitBreaker(2, TimeSpan.FromMinutes(1));
 ```
 
-### Combining Or Nesting Policies ###
+### Combined or Nested Policies ###
 ```csharp
 // Retry once then move to the CircuitBreaker/2nd policy and break the circuit 
 // after the specified number of exceptions (after retries) and keep circuit broken 
